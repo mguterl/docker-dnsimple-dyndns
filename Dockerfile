@@ -1,18 +1,25 @@
-FROM linuxserver/baseimage
-MAINTAINER Pete McWilliams <petemcw@gmail.com>
+FROM lsiobase/alpine
+LABEL maintainer="Michael Guterl <michael@diminishing.org>"
 
-ENV APTLIST="curl inotify-tools"
+RUN \
+  echo '**** install packages ****' && \
+  apk update && \
+  apk add --no-cache dcron curl && \ 
+  echo "**** cleanup ****" && \
+  rm -rf \
+    /root/.cache \
+    /tmp/* \
+    /var/cache/apk/* && \
+  echo '**** setup cron ****' && \
+  mkdir -p /var/log/cron && \
+  mkdir -m 0644 -p /etc/cron.d && \
+  touch /var/log/cron/cron.log
 
-RUN apt-get update && \
-  apt-get install $APTLIST -qy && \
-  apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
+COPY /dnsimple.sh /etc/periodic/15min/dnsimple
 
-# add custom scripts & files
-ADD cron/ /etc/cron.d/
-ADD defaults/ /defaults/
-ADD init/ /etc/my_init.d/
-ADD services/ /etc/service/
-RUN chmod -v +x /etc/service/*/run && chmod -v +x /etc/my_init.d/*.sh
-
-# volumes
-VOLUME /config
+# touch the dnsimple.log so that tail can follow it
+# https://stackoverflow.com/a/43807880
+CMD \
+  crond -b -L /var/log/cron/cron.log "$@" && \
+  touch /var/log/dnsimple.log && \
+  tail -f /var/log/dnsimple.log
