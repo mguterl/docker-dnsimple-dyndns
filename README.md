@@ -19,6 +19,13 @@ docker create --name=dyndns \
 * `-e DOMAIN_NAME` DNSimple Domain
 * `-e RECORD_ID` DNSimple record to update
 
+## Building
+
+```sh
+docker build -t mguterl/docker-dnsimple-dyndns .
+docker push mguterl/docker-dnsimple-dyndns:latest
+```
+
 ## References
 
 * https://developer.dnsimple.com/ddns/
