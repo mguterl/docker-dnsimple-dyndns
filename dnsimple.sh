@@ -30,7 +30,7 @@ fi
 echo "$(date) Fetching IP address" >> /var/log/dnsimple.log
 IP=`curl --ipv4 -s http://icanhazip.com/`
 
-if ! [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+if ! [[ $IP =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Invalid IP address received: $IP"
     exit 2
 fi
