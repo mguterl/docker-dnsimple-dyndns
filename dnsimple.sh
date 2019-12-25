@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # TOKEN - API v2 OAuth token
 # ACCOUNT_ID - Account ID
 # ZONE_ID - Zone ID is the name of the zone (or domain)
@@ -27,6 +29,12 @@ fi
 
 echo "$(date) Fetching IP address" >> /var/log/dnsimple.log
 IP=`curl --ipv4 -s http://icanhazip.com/`
+
+if ! [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Invalid IP address received: $IP"
+    exit 2
+fi
+
 echo "$(date) Updating DNSimple $ZONE_ID with IP address: $IP" >> /var/log/dnsimple.log
 
 curl -H "Authorization: Bearer $TOKEN" \
